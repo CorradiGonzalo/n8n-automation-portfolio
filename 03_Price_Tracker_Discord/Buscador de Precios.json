@@ -1,0 +1,326 @@
+{
+  "name": "Buscador de Precios",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fb440826-feab-4c60-b173-c7662868848c",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.mercadolibre.com.ar/aire-acondicionado-split-friocalor-samsung-inverter-4500f-ar40f18-color-blanco/p/MLA60847416#polycard_client=recommendations_home_trend-function-recommendations&reco_backend=trend_function&wid=MLA1606574667&reco_client=home_trend-function-recommendations&reco_item_pos=1&reco_backend_type=function&reco_id=9b680a83-fb09-4838-8b5f-be83295209c8&sid=recos&c_id=/home/trend-recommendations/element&c_uid=bbec404d-834f-4b13-8fbd-a55fd1fac52c",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a30a0083-50af-4e42-834a-614d8c3eb649",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "precio",
+              "cssSelector": "meta[itemprop=\"price\"]",
+              "returnValue": "attribute",
+              "attribute": "content"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "4dbe5a73-4c32-4d40-97d2-fb537b36bfc2",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "18cUlP0VQCRk43PTtRMscORbesTFou5sYHJtN4YZJtHY",
+          "mode": "list",
+          "cachedResultName": "Precio ML",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18cUlP0VQCRk43PTtRMscORbesTFou5sYHJtN4YZJtHY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18cUlP0VQCRk43PTtRMscORbesTFou5sYHJtN4YZJtHY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        0
+      ],
+      "id": "a58b1057-a87a-4677-9a7b-88e5798a8dfb",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WhcoFOqj5OA3z7Kg",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1475dca1-07aa-4d8f-946c-009bbd4f734a",
+              "leftValue": "={{ $('HTML').item.json.precio }}",
+              "rightValue": "={{ $json.Precio * 0.9}}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        832,
+        0
+      ],
+      "id": "70468989-6d97-4c10-97b9-d5466f26132f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "18cUlP0VQCRk43PTtRMscORbesTFou5sYHJtN4YZJtHY",
+          "mode": "list",
+          "cachedResultName": "Precio ML",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18cUlP0VQCRk43PTtRMscORbesTFou5sYHJtN4YZJtHY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18cUlP0VQCRk43PTtRMscORbesTFou5sYHJtN4YZJtHY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{ $now.format('dd/MM/yyyy') }}",
+            "Producto": "AIRE ACONDICIONADO",
+            "Precio": "={{ $('HTML').item.json.precio }}",
+            "Link": "https://www.mercadolibre.com.ar/aire-acondicionado-split-friocalor-samsung-inverter-4500f-ar40f18-color-blanco/p/MLA60847416#polycard_client=recommendations_home_trend-function-recommendations&reco_backend=trend_function&wid=MLA1606574667&reco_client=home_trend-function-recommendations&reco_item_pos=1&reco_backend_type=function&reco_id=9b680a83-fb09-4838-8b5f-be83295209c8&sid=recos&c_id=/home/trend-recommendations/element&c_uid=bbec404d-834f-4b13-8fbd-a55fd1fac52c"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Producto",
+              "displayName": "Producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Precio",
+              "displayName": "Precio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        -96
+      ],
+      "id": "22fe56a1-53c9-45e9-a275-b631e765ef2b",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WhcoFOqj5OA3z7Kg",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=🚨 **¡OFERTA DETECTADA!** 🚨\n\n📦 **Producto:** {{ $('Get row(s) in sheet').first().json.Producto }}\n📉 **Nuevo Precio:** ${{ $('HTML').first().json.precio }}\n❌ **Antes:** ${{ $('Get row(s) in sheet').first().json.Precio }}\n\n🔗 [Click para ir a la tienda]({{ $('Get row(s) in sheet').first().json.Link }})",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        -96
+      ],
+      "id": "bf422389-7792-44e9-9ce9-e0ee455dd3d0",
+      "name": "Discord",
+      "webhookId": "9026a4b5-6009-482c-a9e6-8c6b1dc36823",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "gInWJtVPeubNR9Z6",
+          "name": "Discord Webhook account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "0d34b5b7-4eda-4e7c-8e3d-6c8f5c3bb041",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "11a1377c5aaad5412d0644aba2f6aabbe3c1213edc3361a663fd40d2f821a62d"
+  },
+  "id": "zDtjm83ddMazvOsO9Tacs",
+  "tags": []
+}

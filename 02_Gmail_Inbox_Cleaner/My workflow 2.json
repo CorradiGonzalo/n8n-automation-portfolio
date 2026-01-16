@@ -1,0 +1,526 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        0
+      ],
+      "id": "024b372d-25e4-482a-af4c-270334be27ba",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 500,
+        "filters": {
+          "readStatus": "unread"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        96,
+        0
+      ],
+      "id": "5098f207-5aee-4695-8724-59544de5312b",
+      "name": "Get many messages",
+      "webhookId": "aecfc531-f977-4fa7-8c08-a679ca4efc3b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rPlzvGU3vLonozVH",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d5791a79-14d2-475a-8e49-88dbfc6efb06",
+              "leftValue": "={{ $json.From }}",
+              "rightValue": "LinkedIn|Freelancer|Workana|Fiverr|Computrabajo",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            },
+            {
+              "id": "94e800f1-d9a0-4a89-8212-f33f835c42e2",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "LinkedIn|Freelancer|Workana|Fiverr|Computrabajo",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        336,
+        -16
+      ],
+      "id": "8df28b4f-41a3-41b6-a6c3-3539904ba121",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "af0b0919-bce3-43a3-afd1-7d7daafd96a2",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "lamentamos|unfortunately|rejected|rechazado|no seleccionado|unsubscribe|darse de baja|publicidad|promo|discount|oferta",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            },
+            {
+              "id": "ecc10994-9d5a-4e6f-ac1c-ec2a48341c70",
+              "leftValue": "={{ $json.From }}",
+              "rightValue": "LinkedIn|Freelancer|Workana|Fiverr|Computrabajo",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        544,
+        80
+      ],
+      "id": "e9102bad-f7e5-484d-8687-f21f3b805286",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1FvBDUZzQ6f5XLU04VnrCT0IxpQDZ0erGy210sfZl9DY",
+          "mode": "list",
+          "cachedResultName": "ResumendeGmails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvBDUZzQ6f5XLU04VnrCT0IxpQDZ0erGy210sfZl9DY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "MAILS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvBDUZzQ6f5XLU04VnrCT0IxpQDZ0erGy210sfZl9DY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "FECHA": "={{ $json.internalDate }}",
+            "REMITENTE": "={{ $json.From }}",
+            "ASUNTO": "={{ $json.Subject }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "FECHA",
+              "displayName": "FECHA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "REMITENTE",
+              "displayName": "REMITENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ASUNTO",
+              "displayName": "ASUNTO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        -176
+      ],
+      "id": "80eff6c6-8749-44b8-89d7-edc21d9f43a0",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WhcoFOqj5OA3z7Kg",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e1ac8e0c-189c-464b-9618-af02285953be",
+              "leftValue": "={{ $json.From }}",
+              "rightValue": "LinkedIn|Freelancer|Workana|Fiverr|Computrabajo",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            },
+            {
+              "id": "200444f5-be87-4f2d-a983-b9850bd0aa35",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "entrevista|interview|reunión|call|llamada|meet|invitación",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        -32
+      ],
+      "id": "fb865e76-f1dd-4988-b725-ca78a6b6d975",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "resource": "chat"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        -128
+      ],
+      "id": "05977cff-dde8-42c5-b462-e84b16c18275",
+      "name": "Get a chat",
+      "webhookId": "6cf4bd62-12b8-41f2-a828-de43e059f353"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1FvBDUZzQ6f5XLU04VnrCT0IxpQDZ0erGy210sfZl9DY",
+          "mode": "list",
+          "cachedResultName": "ResumendeGmails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvBDUZzQ6f5XLU04VnrCT0IxpQDZ0erGy210sfZl9DY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1738021170,
+          "mode": "list",
+          "cachedResultName": "IMPORTANTES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvBDUZzQ6f5XLU04VnrCT0IxpQDZ0erGy210sfZl9DY/edit#gid=1738021170"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "REMITENTE": "={{ $('Get many messages').item.json.From }}",
+            "ASUNTO": "={{ $('Get many messages').item.json.Subject }}",
+            "FECHA": "={{ $('Get many messages').item.json.internalDate }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "FECHA",
+              "displayName": "FECHA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "REMITENTE",
+              "displayName": "REMITENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ASUNTO",
+              "displayName": "ASUNTO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1056,
+        0
+      ],
+      "id": "3f2d27ad-fdd2-472a-b1f0-6fc470399202",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WhcoFOqj5OA3z7Kg",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "messageId": "={{ $('Get many messages').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        240
+      ],
+      "id": "3c1b8f59-f450-4637-a1f1-7a1c9417a248",
+      "name": "Delete a message",
+      "webhookId": "cd85696d-fce2-4ef7-8b84-2d66359bc4fa",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rPlzvGU3vLonozVH",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1FvBDUZzQ6f5XLU04VnrCT0IxpQDZ0erGy210sfZl9DY",
+          "mode": "list",
+          "cachedResultName": "ResumendeGmails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvBDUZzQ6f5XLU04VnrCT0IxpQDZ0erGy210sfZl9DY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1280242217,
+          "mode": "list",
+          "cachedResultName": "BORRAR",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvBDUZzQ6f5XLU04VnrCT0IxpQDZ0erGy210sfZl9DY/edit#gid=1280242217"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "FECHA": "={{ $('Get many messages').item.json.internalDate }}",
+            "REMITENTE": "={{ $('Get many messages').item.json.From }}",
+            "ASUNTO": "={{ $('Get many messages').item.json.Subject }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "FECHA",
+              "displayName": "FECHA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "REMITENTE",
+              "displayName": "REMITENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ASUNTO",
+              "displayName": "ASUNTO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        112
+      ],
+      "id": "15f01ef5-26ac-4167-b521-883f3000049b",
+      "name": "Append row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WhcoFOqj5OA3z7Kg",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get a chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        []
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Delete a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Append row in sheet2": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "bf090720-0cb6-48f6-8176-64f7ffaa0ab3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "11a1377c5aaad5412d0644aba2f6aabbe3c1213edc3361a663fd40d2f821a62d"
+  },
+  "id": "EY1_Ulm9TSNO0E1sy6vYZ",
+  "tags": []
+}

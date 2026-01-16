@@ -1,0 +1,404 @@
+{
+  "name": "BusquedaLaboral",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        0
+      ],
+      "id": "6d9a1ffb-473b-4c96-9998-3e36ee6938bd",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://weworkremotely.com/remote-jobs.rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        368,
+        0
+      ],
+      "id": "6cc4670f-1c2d-4ce0-8e1c-284626b29c47",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cb45398e-fccc-4cff-b597-3173de53c04d",
+              "leftValue": "={{ $json.title }}",
+              "rightValue": "/Engineer|Ingeniero|Software|Web|FullStack|Python|Java|Linux|IA Automation|FrontEnd|BackEnd/i",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        544,
+        0
+      ],
+      "id": "fd81d33e-f283-4c7b-979a-512dd3d7fcbc",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:\\Users\\corra\\.n8n-files\\CV-2026.pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        272
+      ],
+      "id": "202ed94e-0b55-4ecb-b88a-6371dd5719f3",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        880,
+        48
+      ],
+      "id": "5ec09328-7528-4ffc-a077-a4089a12daa0",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        160
+      ],
+      "id": "cafa4f32-1bb5-460c-ab82-620eca7aec44",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1UOUN1E8HvRcWKjxq2vSRmbiiVkn4cbk4smLOj9QHZoU",
+          "mode": "list",
+          "cachedResultName": "Trabajos Freelance",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UOUN1E8HvRcWKjxq2vSRmbiiVkn4cbk4smLOj9QHZoU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UOUN1E8HvRcWKjxq2vSRmbiiVkn4cbk4smLOj9QHZoU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Titulo": "={{ $('Merge').item.json.title }}",
+            "Link": "={{ $('Merge').item.json.link }}",
+            "Descripcion": "={{ $('Merge').item.json.content }}",
+            "Puntaje": "={{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Titulo",
+              "displayName": "Titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Descripcion",
+              "displayName": "Descripcion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Puntaje",
+              "displayName": "Puntaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1632,
+        16
+      ],
+      "id": "1cacb9d5-ec79-41d9-95a0-3a639e0c85ae",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WhcoFOqj5OA3z7Kg",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1088,
+        0
+      ],
+      "id": "f4b33ab9-1b0a-41b3-b15e-c7dfbe5beaa9",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1792,
+        64
+      ],
+      "id": "c365a48c-e9dc-4a52-b5f5-407e72ad2169",
+      "name": "Wait",
+      "webhookId": "5c2223bc-1c23-48bf-8f80-01b86775aa49"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Actúa como un Reclutador Técnico Senior.\nCalcula la probabilidad (0-100) de que yo encaje en este puesto.\n\nMI PERFIL (CONTEXTO CRÍTICO):\n1. Soy Desarrollador JUNIOR.\n2. IMPORTANTE: Mi experiencia es 100% FREELANCE.\n   - Estoy acostumbrado a trabajar por objetivos y con autonomía.\n   - NO tengo experiencia en \"relación de dependencia\" (oficina corporativa tradicional).\n\nMI CV (Texto extraído del PDF actual):\n\"\"\"\n{{ $('Extract from File').item.json.text }}\n\"\"\"\n\nLA OFERTA DE TRABAJO:\nTítulo: {{ $('Merge').item.json.title }}\nDescripción: {{ $('Merge').item.json.content }}\n\nCRITERIOS DE PUNTUACIÓN:\n- Si la oferta pide explícitamente \"años de experiencia en empresa\", \"vida de oficina\" o metodologías corporativas rígidas -> BAJA EL PUNTAJE (ej: 20-30).\n- Si la oferta valora \"autonomía\", \"trabajo remoto\", \"freelance\" o \"resultados\" -> MANTÉN O SUBE EL PUNTAJE.\n- Sé realista.\n\nRESPUESTA:\nDame SOLO el número.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1296,
+        -176
+      ],
+      "id": "2802cd62-a8f3-4a4d-a8c7-7caa452ea3d7",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        16
+      ],
+      "id": "b6647319-a55e-4cb4-84f4-402be03a8239",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "RZLHraZoYV89RoPU",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "ecc85ec2-45b7-492c-9de1-1593fedc44ec",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "11a1377c5aaad5412d0644aba2f6aabbe3c1213edc3361a663fd40d2f821a62d"
+  },
+  "id": "b5zs9DwIXxQVuISuzVT9g",
+  "tags": []
+}
