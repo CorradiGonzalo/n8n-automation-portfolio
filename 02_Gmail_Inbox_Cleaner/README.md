@@ -1,7 +1,5 @@
 # 📧 Smart Inbox Manager & Job Opportunity Filter
 
-![Diagrama del Flujo](diagram.png)
-
 ## 💡 Descripción
 Este workflow convierte una bandeja de entrada caótica en un pipeline organizado de oportunidades. Diseñado para automatizar la gestión de correos electrónicos, el sistema actúa como un filtro inteligente que separa el "ruido" (Spam/Promociones) de la información crítica (Propuestas laborales de LinkedIn, Workana, Freelancer).
 
